@@ -78,3 +78,44 @@ If you did not create this account, please ignore this email.
         html_body=html_body,
         plain_text=plain_text
     )
+#----------expiry notification email----------
+def send_subscription_reminder(email, name):
+    template = env.get_template("subscription_reminder.html")
+
+    html_body = template.render(name=name)
+
+    plain_text = f"""
+Hi {name},
+
+Your SmartPower subscription will expire tomorrow.
+
+Please renew to avoid service interruption.
+"""
+
+    send_email(
+        to_email=email,
+        subject="⏳ Subscription Expiring Tomorrow",
+        html_body=html_body,
+        plain_text=plain_text
+    )
+
+
+def send_subscription_expired(email, name):
+    template = env.get_template("subscription_expired.html")
+
+    html_body = template.render(name=name)
+
+    plain_text = f"""
+Hi {name},
+
+Your SmartPower subscription has expired.
+
+Please renew to continue using our services.
+"""
+
+    send_email(
+        to_email=email,
+        subject="❌ Subscription Expired",
+        html_body=html_body,
+        plain_text=plain_text
+    )

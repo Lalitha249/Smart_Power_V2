@@ -1,0 +1,228 @@
+Okayyy 😄 calm calm… I’ll explain Day 1 clearly so even your friend who hasn’t seen anything can understand.
+
+No confusion. Clean summary.
+
+🚀 DAY 1 — What We Built
+🎯 Goal
+
+Build a clean User Registration Module with:
+
+Proper backend structure
+
+MongoDB connection
+
+Email verification
+
+Layered architecture
+
+🗂 Final Folder Structure (Day 1)
+
+Inside your backend/ folder:
+
+backend/
+│
+├── app.py
+│
+├── db/
+│   └── mongo.py
+│
+├── models/
+│   └── user_model.py
+│
+├── services/
+│   ├── user_service.py
+│   └── email_service.py
+│
+├── controllers/
+│   └── user_controller.py
+│
+├── routes/
+│   └── user_routes.py
+│
+├── templates/
+│   └── verify_email.html
+│
+├── .env
+├── requirements.txt
+└── .gitignore
+
+
+That’s the clean structure.
+
+🧠 What Each Folder Does
+
+Let’s explain like you’re teaching your friend.
+
+1️⃣ app.py
+
+Entry point of the application
+
+Registers blueprints
+
+Starts Flask server
+
+No business logic inside
+
+2️⃣ db/mongo.py
+
+Connects to MongoDB
+
+Loads MONGO_URL from .env
+
+Creates db object
+
+Used by model layer
+
+Only responsibility → DB connection.
+
+3️⃣ models/user_model.py
+
+This talks directly to MongoDB.
+
+Functions:
+
+find_user_by_id()
+
+find_user_by_email()
+
+insert_user()
+
+get_all_users()
+
+Model = Database layer only.
+
+No validation.
+No email.
+No logic.
+
+4️⃣ services/user_service.py
+
+This is the brain.
+
+Handles:
+
+Input validation
+
+Duplicate check
+
+Token generation
+
+Expiry calculation
+
+Calls model to insert user
+
+Calls email service
+
+Returns (response, status)
+
+Service = Business logic layer.
+
+5️⃣ services/email_service.py
+
+Handles:
+
+Loading email credentials
+
+Rendering HTML template
+
+Sending email via SMTP
+
+Plain text + HTML version
+
+Email logic isolated.
+
+6️⃣ controllers/user_controller.py
+
+Handles:
+
+Reading request
+
+Calling service
+
+Returning jsonify response
+
+Controller = HTTP layer.
+
+No DB logic.
+No token logic.
+
+7️⃣ routes/user_routes.py
+
+Defines endpoints:
+
+POST /register
+GET  /users
+
+
+Uses Blueprint.
+
+Route = URL mapping only.
+
+8️⃣ templates/verify_email.html
+
+HTML template for verification email.
+
+Used by email_service.py.
+
+9️⃣ .env
+
+Stores:
+
+MONGO_URL
+EMAIL_ADDRESS
+EMAIL_PASSWORD
+
+
+Sensitive data hidden from GitHub.
+
+🔁 Full Flow (Very Important)
+
+When user sends:
+
+POST /register
+
+
+Flow:
+
+Route
+   ↓
+Controller
+   ↓
+Service
+   ↓
+Model (MongoDB)
+   ↓
+Email Service (SMTP)
+
+
+That’s Day 1 architecture.
+
+✅ What Features Are Working
+
+✔ User registration
+✔ Duplicate user check
+✔ Duplicate email check
+✔ Token generation
+✔ Token expiry (24 hours)
+✔ Email verification sending
+✔ MongoDB storage
+✔ GET /users endpoint
+
+🧱 Architecture Type
+
+Layered Architecture:
+
+Layer	Responsibility
+Routes	URL mapping
+Controller	HTTP handling
+Service	Business logic
+Model	Database
+Email Service	External system
+
+Clean separation.
+
+🎯 In One Line
+
+Day 1 = Identity System
+
+You built a structured user registration + verification backend.
