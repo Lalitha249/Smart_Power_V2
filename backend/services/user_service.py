@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
 import email
 from uuid import uuid4
-from models.user_model import find_user_by_id, find_user_by_email, insert_user
+from models.user_model import find_user_by_id, find_user_by_email, insert_user,get_all_users
 from services.email_service import send_verification_email
 
+def get_users_service():
+    users = get_all_users()
+    return {"users": users}, 200
 
 def register_user_service(data):
 

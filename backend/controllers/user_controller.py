@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from services.user_service import register_user_service
+from services.user_service import register_user_service,get_users_service
 
 
 def register_user_controller():
@@ -7,4 +7,8 @@ def register_user_controller():
 
     response, status = register_user_service(body)
 
+    return jsonify(response), status
+
+def get_users_controller():
+    response, status = get_users_service()
     return jsonify(response), status
