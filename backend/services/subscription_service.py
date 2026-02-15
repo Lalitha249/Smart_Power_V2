@@ -1,8 +1,16 @@
 from datetime import datetime, timedelta
-from models.subscription_model import ( get_plan, create_plan, get_subscription, upsert_subscription, update_subscription)
+from models.subscription_model import (
+    get_plan,
+    create_plan,
+    get_subscription,
+    upsert_subscription,
+    update_subscription
+)
 from models.user_model import find_user_by_id
-from services.email_service import send_email,send_subscription_expired,send_subscription_reminder
+from services.email_service import send_subscription_expired, send_subscription_reminder
 from db.mongo import db
+
+
 # -----------------------------------------
 # PLAN SERVICE METHODS
 # -----------------------------------------
@@ -48,20 +56,16 @@ def subscribe_user_service(data: dict):
     if not plan or not plan.get("is_active", True):
         return {"error": "Plan not available"}, 404
 
-    # -----------------------------
-    # Upgrade Rule A
-    # Reset duration on upgrade
-    # -----------------------------
-
     start_date = datetime.utcnow()
     duration = plan.get("duration_days", 30)
     end_date = start_date + timedelta(days=duration)
+    #end_date = start_date + timedelta(minutes=1)
 
     subscription_data = {
         "user_id": user_id,
         "plan_id": plan_id,
-        "start_date": start_date.isoformat(),
-        "end_date": end_date.isoformat(),
+        "start_date": start_date,
+        "end_date": end_date,
         "status": "active"
     }
 
@@ -78,47 +82,54 @@ def subscribe_user_service(data: dict):
         }
     }, 200
 
-#----------check subscription expiry and send notifications----------
+
+# -----------------------------------------
+# SAFE SCHEDULER FUNCTION
+# -----------------------------------------
+
 def check_subscription_expiry_and_notify():
-    from datetime import datetime, timedelta
+    try:
+        today = datetime.utcnow()
+        subscriptions = db.subscriptions.find({"status": "active"})
 
-    today = datetime.utcnow()
-    tomorrow = today + timedelta(days=1)
+        for sub in subscriptions:
+            try:
+                user_id = sub.get("user_id")
+                end_date = sub.get("end_date")
 
-    # Find all active subscriptions
-    subscriptions = db.subscriptions.find({"status": "active"})
+                # Fix string issue safely
+                if isinstance(end_date, str):
+                    end_date = datetime.fromisoformat(end_date)
 
-    for sub in subscriptions:
-        user_id = sub["user_id"]
-        end_date = sub["end_date"]
+                user = find_user_by_id(user_id)
+                if not user:
+                    continue
 
-        # Fetch user email
-        user = find_user_by_id(user_id)
-        if not user:
-            continue
+                email = user.get("email")
+                name = user.get("name", "User")
 
-        email = user.get("email")
+                # Reminder (1 day before expiry)
+                if today.date() == (end_date.date() - timedelta(days=1)):
+                    send_subscription_reminder(email, name)
 
-        # 1️⃣ Reminder: 1 day before expiry
-        if today.date() == (end_date.date() - timedelta(days=1)):
-            send_email(
-                to=email,
-                subject="Subscription Expiring Tomorrow",
-                body="Your subscription will expire tomorrow. Please renew."
-            )
+                # Expired
+                if today > end_date:
+                    db.subscriptions.update_one(
+                        {"user_id": user_id},
+                        {"$set": {"status": "expired"}}
+                    )
+                    send_subscription_expired(email, name)
 
-        # 2️⃣ Expired
-        if today > end_date:
-            db.subscriptions.update_one(
-                {"user_id": user_id},
-                {"$set": {"status": "expired"}}
-            )
+            except Exception as inner_error:
+                print("Error processing one subscription:", inner_error)
 
-            send_email(
-                to=email,
-                subject="Subscription Expired",
-                body="Your subscription has expired. Please renew to continue services."
-            )
+    except Exception as outer_error:
+        print("Scheduler crashed:", outer_error)
+
+
+# -----------------------------------------
+# GET SUBSCRIPTION
+# -----------------------------------------
 
 def get_subscription_service(user_id: str):
 
@@ -127,16 +138,13 @@ def get_subscription_service(user_id: str):
     if not subscription:
         return {"error": "Subscription not found"}, 404
 
-    # -----------------------------
-    # Expiry Check
-    # -----------------------------
     today = datetime.utcnow()
 
     if today > subscription["end_date"]:
         update_subscription(user_id, {"status": "expired"})
         subscription["status"] = "expired"
+
     subscription["start_date"] = subscription["start_date"].isoformat()
     subscription["end_date"] = subscription["end_date"].isoformat()
 
     return {"subscription": subscription}, 200
-
