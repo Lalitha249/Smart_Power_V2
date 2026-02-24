@@ -1,0 +1,306 @@
+🚀 DAY 3 — USAGE ENGINE (Complete Backend Implementation)
+🎯 Goal of Day 3
+
+Build a complete Energy Usage Tracking & Billing Engine with:
+
+Device-level logging
+
+Plan-based cost calculation
+
+Monthly aggregation
+
+Subscription validation
+
+Device analytics
+
+Clean layered architecture
+
+No ML. No prediction. Only strong foundation.
+
+🏗 1️⃣ Architecture Followed
+
+We followed Layered Architecture:
+
+Routes → Controller → Service → Model → MongoDB
+
+
+Each layer has one responsibility:
+
+Routes → URL mapping
+
+Controller → HTTP handling
+
+Service → Business logic
+
+Model → Database queries only
+
+DB → Data storage
+
+No layer mixes responsibilities.
+
+📦 2️⃣ Database Design
+Collection: usage_logs
+
+Each usage entry stored as:
+
+{
+  "user_id": "user1",
+  "device_name": "AC",
+  "units_consumed": 10,
+  "timestamp": datetime,
+  "month": "2026-02",
+  "calculated_cost": 0
+}
+
+Purpose:
+
+Store every usage event
+
+Enable monthly aggregation
+
+Enable device-wise grouping
+
+Enable billing calculation
+
+Enable future ML
+
+We store logs individually — never overwrite totals.
+
+📁 3️⃣ Model Layer (Database Only)
+File: models/usage_model.py
+
+Functions implemented:
+
+✔ insert_usage_log(data)
+
+Inserts one usage document.
+
+✔ get_total_usage(user_id, month)
+
+Uses MongoDB aggregation:
+
+"$sum": "$units_consumed"
+
+
+Returns total monthly units.
+
+✔ get_device_usage_by_month(user_id, month)
+
+Uses MongoDB pipeline:
+
+"$group": {
+    "_id": "$device_name",
+    "total_units": {"$sum": "$units_consumed"}
+}
+
+
+Then sorts descending.
+
+Purpose:
+Identify highest energy-consuming device.
+
+🧠 4️⃣ Service Layer (Business Logic)
+File: services/usage_service.py
+
+This is the brain.
+
+🔹 A) add_usage_service(data)
+Step-by-step flow:
+
+Validate input fields
+
+Normalize device name:
+
+device_name = device_name.strip().title()
+
+
+Check user exists
+
+Check subscription exists
+
+Ensure subscription is active
+
+Fetch plan details
+
+Get:
+
+included_units
+
+extra_unit_cost
+
+Get current month
+
+Get current total usage
+
+Calculate incremental billing
+
+🔥 Incremental Billing Logic
+
+We do NOT recalculate full month cost.
+
+We calculate only cost caused by THIS entry.
+
+Formula:
+remaining_free_units = max(included_units - current_total, 0)
+
+
+If:
+
+units > remaining_free_units
+
+
+Then:
+
+extra_units = units - remaining_free_units
+extra_cost = extra_units × extra_unit_cost
+
+
+We store only this entry’s extra cost.
+
+🔹 B) get_usage_summary_service(user_id)
+
+Steps:
+
+Validate user
+
+Validate subscription
+
+Fetch plan
+
+Aggregate monthly total
+
+Compare with included_units
+
+Calculate:
+
+extra_units = total_units - included_units
+total_extra_cost = extra_units × extra_unit_cost
+
+
+Returns full monthly summary.
+
+🔹 C) get_device_analytics_service(user_id)
+
+Steps:
+
+Validate user
+
+Get current month
+
+Aggregate device-wise totals
+
+Sort descending
+
+Return:
+
+All devices
+
+Highest usage device
+
+🎮 5️⃣ Controller Layer
+File: controllers/usage_controller.py
+
+Responsibilities:
+
+Receive request
+
+Call service
+
+Return JSON
+
+No logic inside.
+
+Functions:
+
+add_usage_controller()
+
+get_usage_summary_controller()
+
+get_device_analytics_controller()
+
+🌐 6️⃣ Routes Layer
+File: routes/usage_routes.py
+
+Endpoints created:
+
+POST   /usage/add
+GET    /usage/summary/<user_id>
+GET    /usage/devices/<user_id>
+
+
+Blueprint registered in app.py.
+
+🔗 7️⃣ Integration With Subscription Module
+
+During usage addition:
+
+Fetch subscription
+
+Ensure status == "active"
+
+Fetch plan
+
+Extract included_units and extra_unit_cost
+
+This connects Day 2 + Day 3 cleanly.
+
+🧪 8️⃣ Testing Scenarios Covered
+
+Normal usage within limit
+
+Partially exceeding limit
+
+Fully exceeding limit
+
+User without subscription
+
+Expired subscription
+
+Device grouping after multiple entries
+
+All verified.
+
+🔒 9️⃣ Data Integrity Improvements
+Device Name Normalization
+
+Prevents duplicates:
+
+heater
+HEATER
+ Heater
+
+
+All stored as:
+
+Heater
+
+
+Prevents analytics corruption.
+
+🏁 🔥 End Result of Day 3
+
+You now have:
+
+✔ Event-based usage logging
+✔ Plan-based incremental billing
+✔ Monthly aggregation engine
+✔ Device-level analytics
+✔ Subscription enforcement
+✔ Clean layered architecture
+✔ Scalable Mongo aggregation
+✔ ML-ready dataset
+
+This is production-grade backend foundation.
+
+🧠 What You Can Say Confidently Now
+
+“SmartPower stores every usage event separately. It calculates billing incrementally based on remaining free units and aggregates usage dynamically using MongoDB pipelines for monthly and device-level analytics.”
+
+That is professional-level backend explanation.
+
+🚀 Day 3 Status
+
+Foundation complete.
+Stable.
+Scalable.
+Clean.
