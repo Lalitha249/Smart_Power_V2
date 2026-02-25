@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPower - Rewards</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="dashboard.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body class="has-topbar app-page">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html" aria-label="SmartPower Home">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">SmartPower</span>
+    </a>
+
+    <nav class="topnav" aria-label="Primary">
+      <a href="index.html">Dashboard</a>
+      <a href="plans.html">Plans</a>
+      <a href="live.html">Live</a>
+      <a href="rewards.html">Rewards</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <span class="chip" id="topUserEmail" title="Signed in user"></span>
+      <a class="btn btn-ghost" href="signin.html" id="accountLink">Account</a>
+      <button class="btn btn-ghost" type="button" id="logoutBtn" onclick="handleLogout()" style="display:none;">Logout</button>
+    </div>
+  </div>
+</header>
+
+<div class="app-shell">
+
+    <!-- Navigation -->
+    <div class="hero" style="border-radius: 0; padding: 20px;">
+        <h1 class="title" style="font-size: 32px;">🏆 SmartPower Rewards</h1>
+        <p class="tagline">Earn points, save energy, claim rewards!</p>
+        
+        </div>
+
+    <div class="rewards-container">
+        <!-- Points Display -->
+        <div class="points-card">
+            <div style="font-size: 18px; opacity: 0.9;">Your Reward Points</div>
+            <div class="points-value" id="totalPoints">1,250</div>
+            <div style="font-size: 16px; margin-top: 10px;">
+                ⚡ Earned by saving energy and staying within limits
+            </div>
+        </div>
+
+        <!-- Rewards Grid -->
+        <h2 style="text-align: center; margin: 40px 0 20px 0; color: #1e293b;">Available Rewards</h2>
+        
+        <div class="rewards-grid">
+            <div class="reward-card">
+                <div class="reward-icon">💰</div>
+                <h3 style="color: #1e293b; margin-bottom: 10px;">₹100 Bill Credit</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
+                    Get ₹100 credited to your next electricity bill
+                </p>
+                <div class="reward-cost">500 points</div>
+                <button class="claim-btn" onclick="claimReward('bill_credit', 500)">
+                    Claim Reward
+                </button>
+            </div>
+            
+            <div class="reward-card">
+                <div class="reward-icon">🎁</div>
+                <h3 style="color: #1e293b; margin-bottom: 10px;">Smart Plug</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
+                    Energy monitoring smart plug
+                </p>
+                <div class="reward-cost">1,000 points</div>
+                <button class="claim-btn" onclick="claimReward('smart_plug', 1000)">
+                    Claim Reward
+                </button>
+            </div>
+            
+            <div class="reward-card">
+                <div class="reward-icon">💡</div>
+                <h3 style="color: #1e293b; margin-bottom: 10px;">LED Bulb Pack</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
+                    Pack of 4 energy-efficient LED bulbs
+                </p>
+                <div class="reward-cost">750 points</div>
+                <button class="claim-btn" onclick="claimReward('led_bulbs', 750)">
+                    Claim Reward
+                </button>
+            </div>
+            
+            <div class="reward-card">
+                <div class="reward-icon">📊</div>
+                <h3 style="color: #1e293b; margin-bottom: 10px;">Premium Plan Upgrade</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">
+                    One-month free upgrade to Premium plan
+                </p>
+                <div class="reward-cost">2,000 points</div>
+                <button class="claim-btn" onclick="claimReward('premium_upgrade', 2000)">
+                    Claim Reward
+                </button>
+            </div>
+        </div>
+
+        <!-- Rewards History -->
+        <div class="chart-box" style="margin-top: 50px;">
+            <h2>Rewards History</h2>
+            <div id="rewardsHistory" style="min-height: 200px; padding: 20px; background: #f8fafc; border-radius: 10px;">
+                <div style="text-align: center; color: #64748b; padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+                    <p>No rewards claimed yet.</p>
+                    <p style="font-size: 14px;">Claim your first reward above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize rewards page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRewardsData();
+            updateClaimButtons();
+            
+            // Add click handlers for navigation links
+            document.querySelectorAll('.hero-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = this.getAttribute('href');
+                });
+            });
+        });
+        
+        function loadRewardsData() {
+            const userId = localStorage.getItem('user_id') || 'user1';
+            
+            // Try to fetch from backend
+            fetch(`http://localhost:5000/rewards/${userId}`)
+                .then(res => {
+                    if (res.ok) return res.json();
+                    throw new Error('Failed to load rewards');
+                })
+                .then(data => {
+                    const points = data.reward_points || 1250;
+                    document.getElementById('totalPoints').textContent = 
+                        points.toLocaleString();
+                    
+                    // Update localStorage
+                    localStorage.setItem('reward_points', points);
+                })
+                .catch(error => {
+                    console.error('Rewards load error:', error);
+                    // Use localStorage if available
+                    const points = localStorage.getItem('reward_points') || 1250;
+                    document.getElementById('totalPoints').textContent = 
+                        points.toLocaleString();
+                });
+        }
+        
+        function updateClaimButtons() {
+            const points = parseInt(localStorage.getItem('reward_points') || 1250);
+            const buttons = document.querySelectorAll('.claim-btn');
+            
+            buttons.forEach(btn => {
+                const cost = parseInt(btn.parentElement.querySelector('.reward-cost').textContent);
+                if (points < cost) {
+                    btn.disabled = true;
+                    btn.textContent = 'Need More Points';
+                }
+            });
+        }
+        
+        function claimReward(rewardType, cost) {
+            const userId = localStorage.getItem('user_id');
+            if (!userId) {
+                alert("Please login first.");
+                window.location.href = "signin.html";
+                return;
+            }
+
+            const points = parseInt(localStorage.getItem('reward_points') || 0);
+
+            if (points < cost) {
+                alert('You need more points to claim this reward!');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to claim this reward for ${cost} points?`)) {
+                return;
+            }
+
+            // Show loading animation
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.innerHTML = '<span class="loading-spinner"></span> Claiming...';
+            btn.disabled = true;
+
+            fetch('http://localhost:5000/rewards/claim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(async res => {
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Backend success — points already reset to 0
+
+                    alert(`🎉 Reward claimed! You used ${data.claimed_points} points.`);
+
+                    // Update UI
+                    document.getElementById('totalPoints').textContent = "0";
+                    localStorage.setItem('reward_points', 0);
+
+                    // Add history entry
+                    addToHistory(rewardType, data.claimed_points);
+
+                    updateClaimButtons();
+                } else {
+                    alert(`❌ ${data.error || "Failed to claim reward."}`);
+                }
+            })
+            .catch(err => {
+                console.error("Error claiming reward:", err);
+                alert("❌ Could not connect to backend.");
+            })
+            .finally(() => {
+                // Restore button
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
+        }
+        
+        function addToHistory(rewardType, cost) {
+            const historyDiv = document.getElementById('rewardsHistory');
+            const rewardNames = {
+                'bill_credit': '₹100 Bill Credit',
+                'smart_plug': 'Smart Plug',
+                'led_bulbs': 'LED Bulb Pack',
+                'premium_upgrade': 'Premium Plan Upgrade'
+            };
+            
+            const historyItem = document.createElement('div');
+            historyItem.style.cssText = `
+                padding: 15px;
+                margin-bottom: 10px;
+                background: white;
+                border-radius: 8px;
+                border-left: 4px solid #10b981;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            `;
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            historyItem.innerHTML = `
+                <div>
+                    <strong>${rewardNames[rewardType] || rewardType}</strong>
+                    <div style="font-size: 12px; color: #64748b;">${dateStr}</div>
+                </div>
+                <div style="color: #f59e0b; font-weight: 600;">-${cost} points</div>
+            `;
+            
+            // Remove placeholder if it exists
+            const placeholder = historyDiv.querySelector('div[style*="text-align: center"]');
+            if (placeholder) {
+                placeholder.remove();
+            }
+            
+            historyDiv.prepend(historyItem);
+        }
+        
+        // Add loading spinner CSS
+        if (!document.querySelector('style[data-loading-spinner]')) {
+            const style = document.createElement('style');
+            style.setAttribute('data-loading-spinner', 'true');
+            style.textContent = `
+                .loading-spinner {
+                    display: inline-block;
+                    width: 20px;
+                    height: 20px;
+                    border: 3px solid rgba(255,255,255,0.3);
+                    border-radius: 50%;
+                    border-top-color: white;
+                    animation: spin 1s ease-in-out infinite;
+                }
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    var email = localStorage.getItem('user_email');
+    var chip = document.getElementById('topUserEmail');
+    var logoutBtn = document.getElementById('logoutBtn');
+    var accountLink = document.getElementById('accountLink');
+
+    if (chip) {
+      if (email) { chip.textContent = email; chip.style.display = 'inline-flex'; }
+      else { chip.style.display = 'none'; }
+    }
+
+    if (logoutBtn && accountLink) {
+      if (email) { logoutBtn.style.display = 'inline-flex'; accountLink.style.display = 'none'; }
+      else { logoutBtn.style.display = 'none'; accountLink.style.display = 'inline-flex'; }
+    }
+
+    var current = (location.pathname.split('/').pop() || 'index.html');
+    document.querySelectorAll('.topnav a').forEach(function (a) {
+      if (a.getAttribute('href') === current) a.classList.add('active');
+    });
+  } catch (e) {}
+});
+</script>
+</body>
+</html>
