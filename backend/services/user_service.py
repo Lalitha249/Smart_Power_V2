@@ -17,10 +17,13 @@ def verify_email_service(token: str):
 
     if not user:
         return {"error": "Invalid or expired token"}, 400
-
+    
+    if user.get("token_expiry") and user["token_expiry"] < datetime.utcnow():
+        return {"error": "Token expired"}, 400
     update_user(user["_id"], {
-        "is_verified": True,
-        "verification_token": None
+        "email_verified": True,
+        "verification_token": None,
+        "token_expiry": None
     })
 
     return {"message": "Email verified successfully"}, 200

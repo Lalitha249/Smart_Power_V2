@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPower - Choose Plan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body class="has-topbar app-page">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html" aria-label="SmartPower Home">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">SmartPower</span>
+    </a>
+
+    <nav class="topnav" aria-label="Primary">
+      <a href="index.html">Dashboard</a>
+      <a href="plans.html">Plans</a>
+      <a href="live.html">Live</a>
+      <a href="rewards.html">Rewards</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <span class="chip" id="topUserEmail" title="Signed in user"></span>
+      <a class="btn btn-ghost" href="signin.html" id="accountLink">Account</a>
+      <button class="btn btn-ghost" type="button" id="logoutBtn" onclick="handleLogout()" style="display:none;">Logout</button>
+    </div>
+  </div>
+</header>
+
+<div class="app-shell">
+
+    <!-- Navigation -->
+    <div class="hero" style="border-radius: 0; padding: 20px;">
+        <h1 class="title" style="font-size: 32px;">⚡ SmartPower Plans</h1>
+        <p class="tagline">Choose the perfect electricity plan for your needs</p>
+        
+        </div>
+
+    <div class="plans-container">
+        <!-- Plan Cards (using your existing plan-card style) -->
+        <div class="plan-cards" style="margin-top: 30px;">
+            <!-- Basic Plan -->
+            <div class="plan-card basic" onclick="selectPlan('Basic')" id="planBasic">
+                <h3>Basic</h3>
+                <p class="units">100 units / month</p>
+                <p class="price">₹1000</p>
+                <p style="color: #64748b; font-size: 14px; margin: 10px 0;">Perfect for small apartments</p>
+                <button class="select-btn">Select Plan</button>
+            </div>
+
+            <!-- Standard Plan (Popular) -->
+            <div class="plan-card standard selected-plan" onclick="selectPlan('Standard')" id="planStandard">
+                <div class="popular-badge">POPULAR</div>
+                <h3>Standard</h3>
+                <p class="units">200 units / month</p>
+                <p class="price">₹2000</p>
+                <p style="color: #64748b; font-size: 14px; margin: 10px 0;">Best for families</p>
+                <button class="select-btn" style="background: #10b981;">Current Plan</button>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="plan-card premium" onclick="selectPlan('Premium')" id="planPremium">
+                <h3>Premium</h3>
+                <p class="units">400 units / month</p>
+                <p class="price">₹4000</p>
+                <p style="color: #64748b; font-size: 14px; margin: 10px 0;">For large homes & offices</p>
+                <button class="select-btn">Select Plan</button>
+            </div>
+        </div>
+
+        <!-- Plan Comparison -->
+        <div class="plan-comparison">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #1e293b;">Plan Comparison</h2>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8fafc;">
+                            <th style="padding: 15px; text-align: left; border-bottom: 2px solid #000000;">Feature</th>
+                            <th style="padding: 15px; text-align: center; border-bottom: 2px solid #000000;">Basic</th>
+                            <th style="padding: 15px; text-align: center; border-bottom: 2px solid #000000;">Standard</th>
+                            <th style="padding: 15px; text-align: center; border-bottom: 2px solid #000000;">Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">Units per month</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">100</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">200</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">400</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">Live Monitoring</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">AI Recommendations</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">-</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">Reward Points</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">2x Points</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">Priority Support</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">-</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">✓</td>
+                            <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">24/7 Premium</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Subscription Action -->
+        <div class="subscription-box" style="margin-top: 40px;">
+            <h2>Confirm Your Selection</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">
+                Selected Plan: <strong id="selectedPlanName">Standard</strong>
+            </p>
+            <button class="subscribe-action auth-btn" onclick="subscribePlan()">
+                Subscribe to <span id="selectedPlanBtn">Standard</span> Plan
+            </button>
+            <div id="subscribeResult" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+import { subscribeUser } from "../js/api.js";
+import { showToast } from "../js/ui.js";
+
+if (!localStorage.getItem("user_id")) {
+    window.location.href = "signin.html";
+}
+
+let selectedPlan = "standard";
+
+// Map UI names to backend plan_ids
+const planMap = {
+    "Basic": "basic",
+    "Standard": "standard",
+    "Premium": "premium"
+};
+
+function selectPlan(planName) {
+    document.querySelectorAll('.plan-card').forEach(card => {
+        card.classList.remove('selected-plan');
+        card.querySelector('.select-btn').textContent = "Select Plan";
+    });
+
+    const card = document.getElementById(`plan${planName}`);
+    card.classList.add('selected-plan');
+    card.querySelector('.select-btn').textContent = "Selected ✓";
+
+    selectedPlan = planName;
+}
+
+window.selectPlan = selectPlan;
+
+async function subscribePlan() {
+    const userId = localStorage.getItem("user_id");
+    const planId = planMap[selectedPlan];
+
+    const result = await subscribeUser(userId, planId);
+
+    if (!result.success) {
+        showToast(result.message, "error");
+        return;
+    }
+
+    showToast("Plan subscribed successfully!", "success");
+
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 1500);
+}
+
+window.subscribePlan = subscribePlan;
+
+</script>
+</body>
+</html>

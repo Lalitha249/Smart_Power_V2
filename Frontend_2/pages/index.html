@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartPower - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="app-page">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">SmartPower</span>
+    </a>
+
+    <nav class="topnav">
+      <a href="index.html">Dashboard</a>
+      <a href="plans.html">Plans</a>
+      <a href="rewards.html">Rewards</a>
+    </nav>
+
+    <button class="btn btn-ghost" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<div class="app-shell" style="padding:50px; text-align:center;">
+
+    <h1>Welcome ⚡</h1>
+    <p id="welcomeMessage">Loading...</p>
+
+    <!-- NO PLAN STATE -->
+    
+    <div id="noPlanState" style="display:none;">
+    <h2>🚫 No Active Subscription</h2>
+    <a href="plans.html" class="auth-btn">Choose a Plan</a>
+</div>
+
+<div id="dashboardContent" style="display:none;">
+    <h2>Your Current Plan</h2>
+    <p>Plan: <strong id="planName">—</strong></p>
+    <p>
+        <span id="units">0</span> /
+        <span id="limit">0</span> units
+        (<span id="percentage">0%</span>)
+    </p>
+    <div id="rewardPoints">🎁 Reward points: 0</div>
+</div>
+
+    <!-- ACTIVE PLAN STATE -->
+    <div id="dashboardContent" style="display:none; margin-top:40px;">
+        <h2>Your Current Plan</h2>
+        <p>Plan: <strong id="planName">—</strong></p>
+        <p>Units Used: <strong id="unitsUsed">0</strong></p>
+    </div>
+
+</div>
+
+<script type="module">
+import { BASE_URL } from "../js/config.js";
+
+const userId = localStorage.getItem("user_id");
+
+if (!userId) {
+    window.location.href = "signin.html";
+}
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "signin.html";
+});
+
+async function loadDashboard() {
+    try {
+        const res = await fetch(`${BASE_URL}/subscription/${userId}`);
+
+        document.getElementById("welcomeMessage").textContent =
+            `Logged in as ${localStorage.getItem("user_email")}`;
+
+        if (!res.ok) {
+            document.getElementById("noPlanState").style.display = "block";
+            return;
+        }
+
+        const data = await res.json();
+
+        if (!data || !data.plan_id) {
+            document.getElementById("noPlanState").style.display = "block";
+            return;
+        }
+
+        document.getElementById("planName").textContent = data.plan_id;
+        document.getElementById("unitsUsed").textContent = data.units_used || 0;
+
+        document.getElementById("dashboardContent").style.display = "block";
+
+    } catch (error) {
+        console.error("Dashboard error:", error);
+        document.getElementById("noPlanState").style.display = "block";
+    }
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>

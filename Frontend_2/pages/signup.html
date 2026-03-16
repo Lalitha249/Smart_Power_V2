@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartPower - Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Correct CSS path -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="has-topbar auth-page">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">SmartPower</span>
+    </a>
+  </div>
+</header>
+
+<div class="app-shell">
+
+    <div class="auth-container">
+        <div class="auth-card signup">
+
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Start managing your energy smarter ⚡</p>
+
+            <!-- FORM START -->
+            <form id="signupForm">
+
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+
+                <!-- Terms -->
+                <div class="terms-group">
+                    <input type="checkbox" id="acceptTerms" required>
+                    <label for="acceptTerms">
+                        I agree to the Terms & Privacy Policy
+                    </label>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" id="signUpBtn" class="auth-btn">
+                    Create Account
+                </button>
+
+            </form>
+
+            <!-- Message Area -->
+            <div id="authMessage"></div>
+
+            <div style="margin-top:20px; text-align:center;">
+                Already have an account?
+                <a href="signin.html" class="auth-link">Sign In</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script type="module" src="../js/auth.js"></script>

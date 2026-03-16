@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartPower - Sign In</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Correct CSS Path -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="has-topbar auth-page">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">SmartPower</span>
+    </a>
+  </div>
+</header>
+
+<div class="app-shell">
+
+    <div class="auth-container">
+        <div class="auth-card">
+
+            <h1 class="auth-title">Welcome Back ⚡</h1>
+            <p class="auth-subtitle">Sign in to your energy dashboard</p>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+
+            <!-- Remember Me + Forgot -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0;">
+                <div>
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe" style="font-size:14px; color:#64748b;">Remember me</label>
+                </div>
+                <a href="forgotpassword.html" class="auth-link" style="font-size:14px;">Forgot password?</a>
+            </div>
+
+            <!-- Sign In Button -->
+            <button id="signInBtn" class="auth-btn">
+                🔐 Sign In
+            </button>
+
+            <!-- Google Sign In -->
+            <div style="margin-top: 15px;">
+                <button id="googleSignInBtn" class="auth-btn google-btn">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg"
+                         alt="Google"
+                         style="width:18px; margin-right:8px; vertical-align:middle;">
+                    Sign in with Google
+                </button>
+            </div>
+
+            <!-- Message Area -->
+            <div id="authMessage" style="margin-top:15px;"></div>
+
+            <!-- Signup Link -->
+            <div style="margin-top:20px; text-align:center;">
+                Don’t have an account?
+                <a href="signup.html" class="auth-link">Sign Up</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const signInBtn = document.getElementById("signInBtn");
+    const googleBtn = document.getElementById("googleSignInBtn");
+    const messageDiv = document.getElementById("authMessage");
+
+    function showMessage(message, type = "info") {
+        const icons = {
+            success: "✅",
+            error: "❌",
+            warning: "⚠️",
+            info: "ℹ️"
+        };
+
+        messageDiv.innerHTML = `
+            <span>${icons[type] || "ℹ️"}</span>
+            <span>${message}</span>
+        `;
+    }
+
+    // Normal Sign In (Demo Mode)
+    signInBtn.addEventListener("click", function () {
+        const email = document.getElementById("email").value.trim();
+        const rememberMe = document.getElementById("rememberMe").checked;
+
+        if (!email || !email.includes("@")) {
+            showMessage("Please enter a valid email", "error");
+            return;
+        }
+
+        const userId = email.split("@")[0]
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .toLowerCase();
+
+        localStorage.setItem("user_id", userId);
+        localStorage.setItem("user_email", email);
+        localStorage.setItem("user_name", userId + " User");
+
+        if (rememberMe) {
+            localStorage.setItem("remember_me", "true");
+        } else {
+            localStorage.removeItem("remember_me");
+        }
+
+        showMessage("Sign in successful! Redirecting...", "success");
+
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1200);
+    });
+
+    // Google Sign In (Demo Mode)
+    googleBtn.addEventListener("click", function () {
+
+        const demoEmail = "googleuser@gmail.com";
+        const userId = demoEmail.split("@")[0];
+
+        localStorage.setItem("user_id", userId);
+        localStorage.setItem("user_email", demoEmail);
+        localStorage.setItem("user_name", "Google User");
+
+        showMessage("Google Sign-In Successful (Demo Mode)", "success");
+
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1200);
+    });
+</script>
+
+</body>
+</html>
